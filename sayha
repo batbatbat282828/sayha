@@ -1,0 +1,354 @@
+int main() {
+	char exit[]="";
+	srand(time(NULL));
+	if(access("money.txt",0))
+	{
+		FILE *setMoney = fopen("money.txt","w");
+		fprintf(setMoney,"1000");
+		fclose(setMoney);
+	}
+	do
+	{
+		do
+		{
+			char cardnum[13][3]={"3","4","5","6","7","8","9","10","J","Q","K","A","2"};
+			char cardcolor[4][5]={"梅花","方塊","紅心","黑桃"};
+			for(int i=0;i<5;i++)
+			{
+				you.card[i]=99;
+				com.card[i]=99;
+			}
+			for(int i=0;i<10;i++)
+			{
+				check[i]=99;
+			}
+			int repeat,i=0;
+			giveupcheck=0;
+			sayhacheck=0;
+			do
+			{
+				repeat=0;
+				com.card[i] = rand()%52;
+				check[i]=com.card[i];
+				for(int j=0;j<i;j++)
+				{
+					if(com.card[i]==check[j]) repeat=1;
+				}
+				if(repeat==0) i++;
+			}while(repeat==1 || i<5);
+			do
+			{
+				repeat=0;
+				you.card[i-5] = rand()%52;
+				check[i]=you.card[i-5];
+				for(int j=0;j<i;j++)
+				{
+					if(you.card[i-5]==check[j]) repeat=1;
+				}
+				if(repeat==0) i++;
+			}while(repeat==1 || i<10);
+			for(int i=0;i<10;i++)
+			{
+				checknum[i] = check[i]/4;
+				checkcolor[i] = check[i]%4;
+			}
+			FILE *getMoney = fopen("money.txt","r");
+			fscanf(getMoney,"%d",&money);
+			fclose(getMoney);
+			bet=100;
+			combet=100;
+			printf("---------------------------------------------------\n");
+			printf("您身上的金錢為：%d元\n",money);
+			printf("---------------------------------------------------\n");
+			printf("您已下注：%d元\n",bet);
+			printf("電腦已下注：%d元\n\n",combet);
+			int select;
+			printf("電腦持牌：暗牌    %s%2s\n",cardcolor[com.card[1]%4],cardnum[com.card[1]/4]); 
+			printf("您的持牌：%s%2s  %s%2s\n",cardcolor[you.card[0]%4],cardnum[you.card[0]/4],cardcolor[you.card[1]%4],cardnum[you.card[1]/4]); 
+			printf("　　　　 （暗牌）\n");
+			if(you.card[1]>com.card[1])
+			{
+				printf("你的回合!\n");
+				do
+				{
+					printf("1：下注、2：放棄、3：梭哈，請選擇!\n");
+					scanf("%d",&select);
+					if(select<1 || select>3) printf("不要亂\n");
+				}while(select<1 || select>3);
+				switch(select)
+				{
+					case 1:
+						down();
+						comfollow();
+						break;
+					case 2:
+						giveup();
+						break;
+					case 3:
+						if(money<1) 
+						{
+							printf("沒錢梭哈囉!!\n幫你使用一般的下注\n");
+							down();
+							comfollow();
+						}
+						else 
+						{
+							sayha();
+							comsayha();
+						}
+						break;
+				}
+			}
+			else
+			{
+				comdown();
+				printf("你的回合!\n");
+				do
+				{
+					printf("1：跟注、2：加注、3：放棄，請選擇!\n");
+					scanf("%d",&select);
+					if(select<1 || select>3) printf("不要亂\n");
+				}while(select<1 || select>3);
+				switch(select)
+				{
+					case 1:
+						follow();
+						break;
+					case 2:
+						add();
+						break;
+					case 3:
+						giveup();
+						break;
+				}
+			}
+			if(giveupcheck==1) continue;
+			if(sayhacheck==0)
+			{
+				printf("---------------------------------------------------\n");
+				printf("電腦持牌：暗牌    %s%2s  %s%2s\n",cardcolor[com.card[1]%4],cardnum[com.card[1]/4],cardcolor[com.card[2]%4],cardnum[com.card[2]/4]); 
+				printf("您的持牌：%s%2s  %s%2s  %s%2s\n",cardcolor[you.card[0]%4],cardnum[you.card[0]/4],cardcolor[you.card[1]%4],cardnum[you.card[1]/4],cardcolor[you.card[2]%4],cardnum[you.card[2]/4]); 
+				printf("　　　　 （暗牌）\n");
+				if(compare(2)==1)
+				{
+					printf("你的回合!\n");
+					do
+					{
+						printf("1：下注、2：放棄、3：梭哈，請選擇!\n");
+						scanf("%d",&select);
+						if(select<1 || select>3) printf("不要亂\n");
+					}while(select<1 || select>3);
+					switch(select)
+					{
+						case 1:
+							down();
+							comfollow();
+							break;
+						case 2:
+							giveup();
+							break;
+						case 3:
+							if(money<1) 
+							{
+								printf("沒錢梭哈囉!!\n幫你使用一般的下注\n");
+								down();
+								comfollow();
+							}
+							else 
+							{
+								sayha();
+								comsayha();
+							}
+							break;
+					}
+				}
+				else
+				{
+					comdown();
+					printf("你的回合!\n");
+					do
+					{
+						printf("1：跟注、2：加注、3：放棄，請選擇!\n");
+						scanf("%d",&select);
+						if(select<1 || select>3) printf("不要亂\n");
+					}while(select<1 || select>3);
+					switch(select)
+					{
+						case 1:
+							follow();
+							break;
+						case 2:
+							add();
+							break;
+						case 3:
+							giveup();
+							break;
+					}
+				}
+				if(giveupcheck==1) continue;
+			}
+			if(sayhacheck==0)
+			{
+				printf("---------------------------------------------------\n");
+				printf("電腦持牌：暗牌    %s%2s  %s%2s  %s%2s\n",cardcolor[com.card[1]%4],cardnum[com.card[1]/4],cardcolor[com.card[2]%4],cardnum[com.card[2]/4],cardcolor[com.card[3]%4],cardnum[com.card[3]/4]); 
+				printf("您的持牌：%s%2s  %s%2s  %s%2s  %s%2s\n",cardcolor[you.card[0]%4],cardnum[you.card[0]/4],cardcolor[you.card[1]%4],cardnum[you.card[1]/4],cardcolor[you.card[2]%4],cardnum[you.card[2]/4],cardcolor[you.card[3]%4],cardnum[you.card[3]/4]); 
+				printf("　　　　 （暗牌）\n");
+				if(compare(3)==1)
+				{
+					printf("你的回合!\n");
+					do
+					{
+						printf("1：下注、2：放棄、3：梭哈，請選擇!\n");
+						scanf("%d",&select);
+						if(select<1 || select>3) printf("不要亂\n");
+					}while(select<1 || select>3);
+					switch(select)
+					{
+						case 1:
+							down();
+							comfollow();
+							break;
+						case 2:
+							giveup();
+							break;
+						case 3:
+							if(money<1) 
+							{
+								printf("沒錢梭哈囉!!\n幫你使用一般的下注\n");
+								down();
+								comfollow();
+							}
+							else 
+							{
+								sayha();
+								comsayha();
+							}
+							break;
+					}
+				}
+				else
+				{
+					comdown();
+					printf("你的回合!\n");
+					do
+					{
+						printf("1：跟注、2：加注、3：放棄，請選擇!\n");
+						scanf("%d",&select);
+						if(select<1 || select>3) printf("不要亂\n");
+					}while(select<1 || select>3);
+					switch(select)
+					{
+						case 1:
+							follow();
+							break;
+						case 2:
+							add();
+							break;
+						case 3:
+							giveup();
+							break;
+					}
+				}
+				if(giveupcheck==1) continue;
+			}
+			if(sayhacheck==0)
+			{
+				printf("---------------------------------------------------\n");
+				printf("電腦持牌：暗牌    %s%2s  %s%2s  %s%2s  %s%2s\n",cardcolor[com.card[1]%4],cardnum[com.card[1]/4],cardcolor[com.card[2]%4],cardnum[com.card[2]/4],cardcolor[com.card[3]%4],cardnum[com.card[3]/4],cardcolor[com.card[4]%4],cardnum[com.card[4]/4]); 
+				printf("您的持牌：%s%2s  %s%2s  %s%2s  %s%2s  %s%2s\n",cardcolor[you.card[0]%4],cardnum[you.card[0]/4],cardcolor[you.card[1]%4],cardnum[you.card[1]/4],cardcolor[you.card[2]%4],cardnum[you.card[2]/4],cardcolor[you.card[3]%4],cardnum[you.card[3]/4],cardcolor[you.card[4]%4],cardnum[you.card[4]/4]); 
+				printf("　　　　 （暗牌）\n");
+				if(compare(4)==1)
+				{
+					printf("你的回合!\n");
+					do
+					{
+						printf("1：下注、2：放棄、3：梭哈，請選擇!\n");
+						scanf("%d",&select);
+						if(select<1 || select>3) printf("不要亂\n");
+					}while(select<1 || select>3);
+					switch(select)
+					{
+						case 1:
+							down();
+							comfollow();
+							break;
+						case 2:
+							giveup();
+							break;
+						case 3:
+							if(money<1) 
+							{
+								printf("沒錢梭哈囉!!\n幫你使用一般的下注\n");
+								down();
+								comfollow();
+							}
+							else 
+							{
+								sayha();
+								comsayha();
+							}
+							break;
+					}
+				}
+				else
+				{
+					comdown();
+					printf("你的回合!\n");
+					do
+					{
+						printf("1：跟注、2：加注、3：放棄，請選擇!\n");
+						scanf("%d",&select);
+						if(select<1 || select>3) printf("不要亂\n");
+					}while(select<1 || select>3);
+					switch(select)
+					{
+						case 1:
+							follow();
+							break;
+						case 2:
+							add();
+							break;
+						case 3:
+							giveup();
+							break;
+					}
+				}
+				if(giveupcheck==1) continue;
+				}
+			printf("---------------------------------------------------\n");
+			printf("電腦持牌：%s%2s  %s%2s  %s%2s  %s%2s  %s%2s\n",cardcolor[com.card[0]%4],cardnum[com.card[0]/4],cardcolor[com.card[1]%4],cardnum[com.card[1]/4],cardcolor[com.card[2]%4],cardnum[com.card[2]/4],cardcolor[com.card[3]%4],cardnum[com.card[3]/4],cardcolor[com.card[4]%4],cardnum[com.card[4]/4]); 
+			printf("您的持牌：%s%2s  %s%2s  %s%2s  %s%2s  %s%2s\n",cardcolor[you.card[0]%4],cardnum[you.card[0]/4],cardcolor[you.card[1]%4],cardnum[you.card[1]/4],cardcolor[you.card[2]%4],cardnum[you.card[2]/4],cardcolor[you.card[3]%4],cardnum[you.card[3]/4],cardcolor[you.card[4]%4],cardnum[you.card[4]/4]); 
+			if(compare(5)==1)
+			{
+				printf("你的勝利!!\n\n");
+				printf("荷包進帳%d元!!\n",combet);
+				printf("目前財產為%d元!!\n\n",money+combet);
+				FILE *setMoney = fopen("money.txt","w");
+				fprintf(setMoney,"%d",money+combet);
+				fclose(setMoney);
+			}
+			else
+			{
+				printf("電腦的勝利!!\n\n");
+				printf("荷包出走%d元!!\n",bet);
+				printf("目前財產為%d元!!\n\n",money-bet);
+				FILE *setMoney = fopen("money.txt","w");
+				fprintf(setMoney,"%d",money-bet);
+				fclose(setMoney);
+			}
+		}while(0);
+		if(giveupcheck==1)
+		{
+			FILE *setMoney = fopen("money.txt","w");
+			fprintf(setMoney,"%d",money-bet);
+			fclose(setMoney);
+			printf("荷包出走%d元!!\n",bet);
+			printf("目前財產為%d元!!\n\n",money-bet);
+		}
+		printf("\n=========================================================\n回合結束!! 輸入exit離開，輸入其餘任意字繼續：");
+		scanf("%s",&exit);
+	}while(strcmp(exit,"exit"));
+	printf("-----------------------------------------------------------\n\n感謝遊玩!! 四資工一甲 C107151131 張勝濱\n\n");
+	system("pause");
+	return 0;
+}
